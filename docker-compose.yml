@@ -11,4 +11,4 @@ services:
     command: "python3 run_web.py"
     restart: always
     ports:
-      - "6600:6600"
+      - "6699:6699"
