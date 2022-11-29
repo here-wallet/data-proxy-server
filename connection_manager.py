@@ -12,11 +12,24 @@ class ConnectionManager:
         self.requests_by_topic = dict()
         self.topic_by_request = dict()
 
+    def connect(self, request_id, websocket):
+        self.active_connections[request_id] = websocket
+
+    def disconnect(self, request_id):
+        self.active_connections.pop(request_id, None)
+
     def put_request(self, id_, request, topic_id):
         self.requests[id_] = request
         if topic_id:
             self.requests_by_topic[topic_id] = id_
             self.topic_by_request[id_] = topic_id
+        if id_ in self.active_connections:
+            self.active_connections[id_].send_json(
+                {
+                    "type": "request",
+                    "data": request,
+                }
+            )
 
     def delete_request(self, id_):
         self.requests.pop(id_)
@@ -24,9 +37,19 @@ class ConnectionManager:
         if id_ in self.topic_by_request:
             self.requests_by_topic.pop(self.topic_by_request[id_])
             self.topic_by_request.pop(id_)
+        if id_ in self.active_connections:
+            self.active_connections[id_].send_json(
+                {
+                    "type": "delete",
+                }
+            )
 
     def put_response(self, id_, response):
         self.response[id_] = response
+        if id_ in self.active_connections:
+            self.active_connections[id_].send_json(
+                {"type": "response", "data": response}
+            )
 
     def get_request(self, id_):
         return self.requests.get(id_, None)

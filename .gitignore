@@ -11,7 +11,6 @@ aps.cer
 apn_key.p8
 dep-config.yml
 opn_oops_key.p8
-apple-app-site-association
 configs/teller
 logs
 configs

@@ -1,5 +1,8 @@
 from fastapi import APIRouter, Depends
+from starlette.responses import HTMLResponse
+from starlette.websockets import WebSocket, WebSocketDisconnect
 
+from configs import APPLE_APP_SITE_ASSOCIATION
 from connection_manager import get_connection_manager, ConnectionManager
 from models import ResponseInModel, RequestInModel
 
@@ -33,6 +36,20 @@ def get_response(
     return {"data": cm.get_response(request_id)}
 
 
+@router.websocket("/ws/{request_id}")
+async def websocket_endpoint(
+    websocket: WebSocket,
+    request_id: str,
+    cm: ConnectionManager = Depends(get_connection_manager()),
+):
+    await cm.connect(request_id, websocket)
+    try:
+        while True:
+            await websocket.receive_text()
+    except WebSocketDisconnect:
+        cm.disconnect(request_id)
+
+
 @router.delete("/{request_id}")
 def delete_response(
     request_id: str, cm: ConnectionManager = Depends(get_connection_manager())
@@ -47,3 +64,14 @@ def get_request(
 ):
     requests = cm.get_requests_by_topics(topic_ids.split(";"))
     return {"ids": requests}
+
+
+@router.get("/apple-app-site-association")
+def get_apple_app_clip():
+    return HTMLResponse(
+        content=APPLE_APP_SITE_ASSOCIATION,
+        status_code=200,
+        headers={
+            "Content-Type": "application/octet-stream",
+        },
+    )
