@@ -95,6 +95,8 @@ class ConnectionManager:
         return self.notifications.pop(near_account_id, [])
 
     def send_sse_for_user(self, near_account_id, data):
+        if near_account_id not in self._connected_sse_users:
+            return
         return self.notifications[near_account_id].append(data)
 
 
