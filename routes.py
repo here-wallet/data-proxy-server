@@ -88,9 +88,7 @@ def put_response(
     cm: ConnectionManager = Depends(get_connection_manager()),
 ):
     if d.key != APY_KEY:
-        logger.info(f"Wrong ke {d.key} {APY_KEY}")
         raise HTTPException(status_code=403, detail="Invalid key")
-    logger.info("SSE event: {}", d.data)
     cm.send_sse_for_user(d.near_account_id, d.data)
     return {"status": "ok"}
 
