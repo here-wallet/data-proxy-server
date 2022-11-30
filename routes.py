@@ -1,10 +1,15 @@
-from fastapi import APIRouter, Depends
+import asyncio
+
+from fastapi import APIRouter, Depends, HTTPException
+from loguru import logger
+from starlette.requests import Request
 from starlette.responses import HTMLResponse
 from starlette.websockets import WebSocket, WebSocketDisconnect
+from sse_starlette import EventSourceResponse
 
-from configs import APPLE_APP_SITE_ASSOCIATION
+from configs import APPLE_APP_SITE_ASSOCIATION, APY_KEY
 from connection_manager import get_connection_manager, ConnectionManager
-from models import ResponseInModel, RequestInModel
+from models import ResponseInModel, RequestInModel, SSEInModel
 
 router = APIRouter()
 
@@ -75,3 +80,41 @@ def get_apple_app_clip():
             "Content-Type": "application/octet-stream",
         },
     )
+
+
+@router.post("/sse_event")
+def put_response(
+    d: SSEInModel,
+    cm: ConnectionManager = Depends(get_connection_manager()),
+):
+    if d.key != APY_KEY:
+        raise HTTPException(status_code=403, detail="Invalid key")
+    cm.send_sse_for_user(d.near_account_id, d.data)
+    return {"status": "ok"}
+
+
+@router.get("/notificator_stream")
+async def message_stream(
+    request: Request,
+    near_account_id: str,
+    cm: ConnectionManager = Depends(get_connection_manager()),
+):
+
+    cm.connect_sse(near_account_id)
+    logger.info(f"Connect SSE {near_account_id}")
+
+    async def event_generator():
+        while True:
+            # If client closes connection, stop sending events
+            if await request.is_disconnected():
+                logger.info("Client disconnected")
+                cm.disconnect_sse(near_account_id)
+                break
+
+            # Checks for new messages and return them to client if any
+            for mes in cm.get_sse_for_user(near_account_id):
+                yield mes.json()
+
+            await asyncio.sleep(0.3)
+
+    return EventSourceResponse(event_generator())

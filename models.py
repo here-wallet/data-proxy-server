@@ -7,6 +7,12 @@ class ResponseInModel(BaseModel):
     data: str
 
 
+class SSEInModel(BaseModel):
+    data: str
+    near_account_id: str
+    key: str
+
+
 class RequestInModel(BaseModel):
     data: str
     topic_id: Optional[str]

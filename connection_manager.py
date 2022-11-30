@@ -1,7 +1,22 @@
-from typing import Dict, List
+import collections
+from enum import Enum
+from typing import Dict, List, Union
 
 from starlette.requests import Request
 from starlette.websockets import WebSocket
+from pydantic import BaseModel
+
+
+class ClientNotificationEnum(int, Enum):
+    PUSH = 1
+    RATES_UPDATE = 2
+    REFRESH = 3
+    REFRESH_BALANCE = 4
+
+
+class ClientNotificationData(BaseModel):
+    event_type: ClientNotificationEnum = ClientNotificationEnum.PUSH
+    payload: Union[dict, None] = None
 
 
 class ConnectionManager:
@@ -11,6 +26,11 @@ class ConnectionManager:
         self.response = dict()
         self.requests_by_topic = dict()
         self.topic_by_request = dict()
+
+        self._connected_sse_users = set()
+        self.notifications: Dict[
+            str, List[ClientNotificationData]
+        ] = collections.defaultdict(list)
 
     def connect(self, request_id, websocket):
         self.active_connections[request_id] = websocket
@@ -63,6 +83,19 @@ class ConnectionManager:
             if tid in self.requests_by_topic:
                 res.append(self.requests_by_topic[tid])
         return res
+
+    def connect_sse(self, near_account_id):
+        self._connected_sse_users.add(near_account_id)
+
+    def disconnect_sse(self, near_account_id):
+        if near_account_id in self._connected_sse_users:
+            self._connected_sse_users.remove(near_account_id)
+
+    def get_sse_for_user(self, near_account_id):
+        return self.notifications.pop(near_account_id, [])
+
+    def send_sse_for_user(self, near_account_id, data):
+        return self.notifications[near_account_id].append(data)
 
 
 def get_connection_manager(websocket=False):
