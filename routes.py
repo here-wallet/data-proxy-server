@@ -71,13 +71,6 @@ def get_request(
     return {"ids": requests}
 
 
-@router.get("/{request}")
-def redirect_to_web(
-    request: str,
-):
-    return RedirectResponse(url=f"https://web.herewallet.app/approve/{request}&new")
-
-
 @router.get("/apple-app-site-association")
 def get_apple_app_clip():
     return HTMLResponse(
@@ -122,6 +115,13 @@ async def message_stream(
             for mes in cm.get_sse_for_user(near_account_id):
                 yield mes.json()
 
-            await asyncio.sleep(0.3)
+            await asyncio.sleep(0.1)
 
     return EventSourceResponse(event_generator())
+
+
+@router.get("/{request}")
+def redirect_to_web(
+    request: str,
+):
+    return RedirectResponse(url=f"https://web.herewallet.app/approve/{request}&new")
