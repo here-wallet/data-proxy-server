@@ -2,6 +2,7 @@ import collections
 from enum import Enum
 from typing import Dict, List, Union
 
+from loguru import logger
 from starlette.requests import Request
 from starlette.websockets import WebSocket
 from pydantic import BaseModel
@@ -97,6 +98,7 @@ class ConnectionManager:
 
     def send_sse_for_user(self, near_account_id, data):
         if near_account_id is None:
+            logger.info("Sending SSE to all users")
             for near_account_id in self._connected_sse_users:
                 self.notifications[near_account_id].append(data)
             return
