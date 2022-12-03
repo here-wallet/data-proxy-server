@@ -63,7 +63,7 @@ def delete_response(
     return {"status": "ok"}
 
 
-@router.get("/")
+@router.get("/by_topic")
 def get_request(
     topic_ids: str, cm: ConnectionManager = Depends(get_connection_manager())
 ):
