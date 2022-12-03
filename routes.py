@@ -3,7 +3,7 @@ import asyncio
 from fastapi import APIRouter, Depends, HTTPException
 from loguru import logger
 from starlette.requests import Request
-from starlette.responses import HTMLResponse
+from starlette.responses import HTMLResponse, RedirectResponse
 from starlette.websockets import WebSocket, WebSocketDisconnect
 from sse_starlette import EventSourceResponse
 
@@ -69,6 +69,13 @@ def get_request(
 ):
     requests = cm.get_requests_by_topics(topic_ids.split(";"))
     return {"ids": requests}
+
+
+@router.get("/{request}")
+def redirect_to_web(
+    request: str,
+):
+    return RedirectResponse(url=f"https://web.herewallet.app/approve/{request}&new")
 
 
 @router.get("/apple-app-site-association")
