@@ -90,11 +90,17 @@ class ConnectionManager:
     def disconnect_sse(self, near_account_id):
         if near_account_id in self._connected_sse_users:
             self._connected_sse_users.remove(near_account_id)
+        self.notifications[near_account_id] = []
 
     def get_sse_for_user(self, near_account_id):
         return self.notifications.pop(near_account_id, [])
 
     def send_sse_for_user(self, near_account_id, data):
+        if near_account_id is None:
+            for near_account_id in self._connected_sse_users:
+                self.notifications[near_account_id].append(data)
+            return
+
         if near_account_id not in self._connected_sse_users:
             return
         return self.notifications[near_account_id].append(data)

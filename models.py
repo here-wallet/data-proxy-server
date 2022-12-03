@@ -9,7 +9,7 @@ class ResponseInModel(BaseModel):
 
 class SSEInModel(BaseModel):
     data: str
-    near_account_id: str
+    near_account_id: Optional[str]
     key: str
 
 
