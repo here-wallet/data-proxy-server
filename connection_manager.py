@@ -98,7 +98,7 @@ class ConnectionManager:
 
     def send_sse_for_user(self, near_account_id, data):
         if near_account_id is None:
-            logger.info("Sending SSE to all users")
+            logger.info("Sending SSE to all users {}".format(len(self._connected_sse_users)))
             for near_account_id in self._connected_sse_users:
                 self.notifications[near_account_id].append(data)
             return
