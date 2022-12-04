@@ -10,7 +10,7 @@ from sse_starlette import EventSourceResponse
 
 from configs import APPLE_APP_SITE_ASSOCIATION, APY_KEY
 from connection_manager import get_connection_manager, ConnectionManager
-from models import ResponseInModel, RequestInModel, SSEInModel
+from models import ResponseInModel, RequestInModel, SSEInModel, RequestOutModel
 
 router = APIRouter()
 
