@@ -53,7 +53,7 @@ def get_request(
 async def websocket_endpoint(
     websocket: WebSocket,
     request_id: str,
-    cm: ConnectionManager = Depends(get_connection_manager()),
+    cm: ConnectionManager = Depends(get_connection_manager(True)),
 ):
     await websocket.accept()
     await cm.connect(request_id, websocket)
