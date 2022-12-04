@@ -45,12 +45,7 @@ class ConnectionManager:
             self.requests_by_topic[topic_id] = id_
             self.topic_by_request[id_] = topic_id
         if id_ in self.active_connections:
-            self.active_connections[id_].send_json(
-                {
-                    "type": "request",
-                    "data": request,
-                }
-            )
+            self.active_connections[id_].send_json(request)
 
     def delete_request(self, id_):
         self.requests.pop(id_)
@@ -98,7 +93,9 @@ class ConnectionManager:
 
     def send_sse_for_user(self, near_account_id, data):
         if near_account_id is None:
-            logger.info("Sending SSE to all users {}".format(len(self._connected_sse_users)))
+            logger.info(
+                "Sending SSE to all users {}".format(len(self._connected_sse_users))
+            )
             for near_account_id in self._connected_sse_users:
                 self.notifications[near_account_id].append(data)
             return

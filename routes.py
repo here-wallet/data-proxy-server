@@ -21,7 +21,7 @@ def put_request(
     d: RequestInModel,
     cm: ConnectionManager = Depends(get_connection_manager()),
 ):
-    cm.put_request(request_id, d.data, d.topic_id)
+    cm.put_request(request_id, d.dist(), d.topic_id)
     return {"status": "ok"}
 
 
@@ -40,6 +40,13 @@ def get_response(
     request_id: str, cm: ConnectionManager = Depends(get_connection_manager())
 ):
     return {"data": cm.get_response(request_id)}
+
+
+@router.get("/{request_id}/request", response_model=RequestOutModel)
+def get_request(
+    request_id: str, cm: ConnectionManager = Depends(get_connection_manager())
+):
+    return cm.get_request(request_id)
 
 
 @router.websocket("/ws/{request_id}")

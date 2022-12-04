@@ -15,6 +15,13 @@ class SSEInModel(BaseModel):
 
 class RequestInModel(BaseModel):
     data: str
+    type: str = "login"
     topic_id: Optional[str]
     ttl: Optional[int]
+    encrypted: bool = False
+
+
+class RequestOutModel(BaseModel):
+    data: str
+    type: str = "login"
     encrypted: bool = False
