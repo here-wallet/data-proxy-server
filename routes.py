@@ -48,6 +48,7 @@ async def websocket_endpoint(
     request_id: str,
     cm: ConnectionManager = Depends(get_connection_manager()),
 ):
+    await websocket.accept()
     await cm.connect(request_id, websocket)
     try:
         while True:
