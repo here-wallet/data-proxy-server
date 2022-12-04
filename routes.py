@@ -21,7 +21,7 @@ def put_request(
     d: RequestInModel,
     cm: ConnectionManager = Depends(get_connection_manager()),
 ):
-    cm.put_request(request_id, d.dist(), d.topic_id)
+    cm.put_request(request_id, d.dict(), d.topic_id)
     return {"status": "ok"}
 
 
