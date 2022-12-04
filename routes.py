@@ -1,4 +1,5 @@
 import asyncio
+import json
 
 from fastapi import APIRouter, Depends, HTTPException
 from loguru import logger
@@ -113,7 +114,9 @@ async def message_stream(
 
             # Checks for new messages and return them to client if any
             for mes in cm.get_sse_for_user(near_account_id):
-                yield mes.json()
+                if isinstance(mes, dict):
+                    mes = json.dumps(mes)
+                yield mes
 
             await asyncio.sleep(0.1)
 
