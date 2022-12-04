@@ -33,7 +33,8 @@ class ConnectionManager:
             str, List[ClientNotificationData]
         ] = collections.defaultdict(list)
 
-    def connect(self, request_id, websocket):
+    async def connect(self, request_id, websocket):
+        await websocket.accept()
         self.active_connections[request_id] = websocket
 
     def disconnect(self, request_id):
