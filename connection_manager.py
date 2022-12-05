@@ -49,10 +49,10 @@ class ConnectionManager:
             self.active_connections[id_].send_json(request)
 
     def delete_request(self, id_):
-        self.requests.pop(id_)
-        self.response.pop(id_)
+        self.requests.pop(id_, None)
+        self.response.pop(id_, None)
         if id_ in self.topic_by_request:
-            self.requests_by_topic.pop(self.topic_by_request[id_])
+            self.requests_by_topic.pop(self.topic_by_request[id_], None)
             self.topic_by_request.pop(id_)
         if id_ in self.active_connections:
             self.active_connections[id_].send_json(
