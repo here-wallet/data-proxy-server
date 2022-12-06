@@ -135,3 +135,10 @@ def redirect_to_web(
     request: str,
 ):
     return RedirectResponse(url=f"https://web.herewallet.app/approve/{request}?new")
+
+
+@router.get("/a/{linkdrop}")
+def redirect_to_linkdrop(
+    linkdrop: str,
+):
+    return RedirectResponse(url=f"https://phone.herewallet.app/a/{linkdrop}")
