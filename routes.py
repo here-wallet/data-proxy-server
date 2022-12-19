@@ -1,7 +1,7 @@
 import asyncio
 import json
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Header
 from loguru import logger
 from starlette.requests import Request
 from starlette.responses import HTMLResponse, RedirectResponse
@@ -9,8 +9,13 @@ from starlette.websockets import WebSocket, WebSocketDisconnect
 from sse_starlette import EventSourceResponse
 
 from configs import APPLE_APP_SITE_ASSOCIATION, APY_KEY
-from connection_manager import get_connection_manager, ConnectionManager
+from connection_manager import (
+    get_connection_manager,
+    ConnectionManager,
+    get_push_manager,
+)
 from models import ResponseInModel, RequestInModel, SSEInModel, RequestOutModel
+from push_notification import ApnsPusher, Task
 
 router = APIRouter()
 
@@ -98,6 +103,18 @@ def put_response(
     if d.key != APY_KEY:
         raise HTTPException(status_code=403, detail="Invalid key")
     cm.send_sse_for_user(d.near_account_id, d.data)
+    return {"status": "ok"}
+
+
+@router.post("/push_notification")
+def push_notification(
+    task: Task,
+    authorization: str = Header(),
+    ap: ApnsPusher = Depends(get_push_manager()),
+):
+    if authorization != APY_KEY:
+        raise HTTPException(status_code=403, detail="Invalid key")
+    ap.send_notification(task)
     return {"status": "ok"}
 
 

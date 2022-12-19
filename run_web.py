@@ -2,17 +2,17 @@
 
 """Main app file."""
 import os
-import sys
 
 import uvicorn
 from fastapi import FastAPI
 from loguru import logger
 from starlette.middleware.cors import CORSMiddleware
 
+from configs import CONFIG
 from connection_manager import ConnectionManager
+from push_notification import ApnsPusher
 from routes import router
 
-# logger.remove()
 logger.add(
     "logs/info.log",
     level="INFO",
@@ -49,9 +49,12 @@ if __name__ == "__main__":
     async def on_shutdown(*args):
         pass
 
+    pusher = ApnsPusher(**CONFIG["apple_apn"])
+    pusher.run()
     app = FastAPI(
         title="HERE wallet backend",
         connection_manager=ConnectionManager(),
+        pusher=pusher,
     )
 
     app.include_router(router, prefix=f"", tags=["web"])

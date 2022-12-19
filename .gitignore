@@ -2,11 +2,9 @@ venv
 .idea
 __pycache__
 data
-api-config.yml
-dev-config.yml
+config.yaml
 .pytest_cache
 .coverage
-config.test.yml
 aps.cer
 apn_key.p8
 dep-config.yml

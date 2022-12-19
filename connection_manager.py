@@ -116,3 +116,15 @@ def get_connection_manager(websocket=False):
     if websocket:
         return app_conf_ws
     return app_conf
+
+
+def get_push_manager(websocket=False):
+    async def app_conf(request: Request) -> ConnectionManager:
+        return request.app.extra.get("pusher")
+
+    async def app_conf_ws(ws: WebSocket) -> ConnectionManager:
+        return ws.app.extra.get("pusher")
+
+    if websocket:
+        return app_conf_ws
+    return app_conf
