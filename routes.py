@@ -151,7 +151,7 @@ async def message_stream(
 def redirect_to_web(
     request: str,
 ):
-    return RedirectResponse(url=f"https://web.herewallet.app/approve/{request}?new")
+    return RedirectResponse(url=f"https://my.herewallet.app/approve/{request}")
 
 
 @router.get("/a/{linkdrop}")
