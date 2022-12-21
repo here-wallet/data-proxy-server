@@ -16,3 +16,4 @@ hyper==0.7.0
 hyperframe==3.2.0
 PyJWT==2.6.0
 cryptography==38.0.4
+base58==2.1.1
