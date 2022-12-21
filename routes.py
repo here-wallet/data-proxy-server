@@ -3,6 +3,9 @@ import json
 
 from fastapi import APIRouter, Depends, HTTPException, Header
 from loguru import logger
+from pynear import transactions
+from pynear.constants import TGAS
+from pynear.utils import actions_to_link
 from starlette.requests import Request
 from starlette.responses import HTMLResponse, RedirectResponse
 from starlette.websockets import WebSocket, WebSocketDisconnect
@@ -159,3 +162,21 @@ def redirect_to_linkdrop(
     linkdrop: str,
 ):
     return RedirectResponse(url=f"https://phone.herewallet.app/a/{linkdrop}")
+
+
+@router.get("/keypom/{password}")
+def redirect_to_keypom(
+    password: str,
+):
+    link = actions_to_link(
+        "keypom.near",
+        [
+            transactions.create_function_call_action(
+                "claim",
+                json.dumps({"password": password}).encode("utf8"),
+                50 * TGAS,
+                0,
+            )
+        ],
+    )
+    return RedirectResponse(url=link)
