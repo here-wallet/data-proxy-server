@@ -1,8 +1,12 @@
 import collections
+import json
+import re
 from enum import Enum
 from typing import Dict, List, Union
 
+import base58
 from loguru import logger
+from pyonear.transaction import Action
 from starlette.requests import Request
 from starlette.websockets import WebSocket
 from pydantic import BaseModel
@@ -128,3 +132,44 @@ def get_push_manager(websocket=False):
     if websocket:
         return app_conf_ws
     return app_conf
+
+
+def _camel_case(s):
+    s = re.sub(r"(_|-)+", " ", s).title().replace(" ", "")
+    return "".join([s[0].lower(), s[1:]])
+
+
+def actions_to_link(receiver_id, actions: List[Action], network="mainnet"):
+    actions_args = []
+    for a in actions:
+        params = {}
+        for p, v in json.loads(a.to_json()).items():
+            if p == "access_key":
+                if "FunctionCall" in v["permission"]:
+                    for par, val in v["permission"]["FunctionCall"].items():
+                        v["permission"][_camel_case(par)] = val
+                    del v["permission"]["FunctionCall"]
+                else:
+                    v["permission"] = "FullAccess"
+            params[_camel_case(p)] = v
+        actions_args.append(
+            {
+                "type": type(a).__name__.replace("Action", ""),
+                "params": params,
+            }
+        )
+    print(actions_args)
+    request = base58.b58encode(
+        json.dumps(
+            {
+                "transactions": [
+                    {
+                        "actions": actions_args,
+                        "receiverId": receiver_id,
+                    }
+                ],
+                "network": network,
+            }
+        ).encode("utf8")
+    ).decode("utf8")
+    return f"https://my.herewallet.app/{request}"

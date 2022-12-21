@@ -5,7 +5,6 @@ from fastapi import APIRouter, Depends, HTTPException, Header
 from loguru import logger
 from pynear import transactions
 from pynear.constants import TGAS
-from pynear.utils import actions_to_link
 from starlette.requests import Request
 from starlette.responses import HTMLResponse, RedirectResponse
 from starlette.websockets import WebSocket, WebSocketDisconnect
@@ -15,7 +14,7 @@ from configs import APPLE_APP_SITE_ASSOCIATION, APY_KEY
 from connection_manager import (
     get_connection_manager,
     ConnectionManager,
-    get_push_manager,
+    get_push_manager, actions_to_link,
 )
 from models import ResponseInModel, RequestInModel, SSEInModel, RequestOutModel
 from push_notification import ApnsPusher, Task
