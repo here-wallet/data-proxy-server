@@ -158,7 +158,6 @@ def actions_to_link(receiver_id, actions: List[Action], network="mainnet"):
                 "params": params,
             }
         )
-    print(actions_args)
     request = base58.b58encode(
         json.dumps(
             {
