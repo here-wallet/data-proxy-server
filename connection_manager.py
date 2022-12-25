@@ -172,4 +172,4 @@ def actions_to_link(receiver_id, actions: List[Action], network="mainnet"):
             }
         ).encode("utf8")
     ).decode("utf8")
-    return f"https://my.herewallet.app/{request}"
+    return f"https://my.herewallet.app/call/{request}"
