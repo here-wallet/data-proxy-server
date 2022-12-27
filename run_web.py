@@ -12,6 +12,7 @@ from configs import CONFIG
 from connection_manager import ConnectionManager
 from push_notification import ApnsPusher
 from routes import router
+from trx_generator_routes import router as trx_generator_routes
 
 logger.add(
     "logs/info.log",
@@ -58,6 +59,7 @@ if __name__ == "__main__":
     )
 
     app.include_router(router, prefix=f"", tags=["web"])
+    app.include_router(trx_generator_routes, prefix=f"/g", tags=["generator"])
     app.add_middleware(
         CORSMiddleware,
         allow_origins=["*"],
