@@ -2,7 +2,7 @@ import collections
 import json
 import re
 from enum import Enum
-from typing import Dict, List, Union
+from typing import Dict, List, Union, Tuple
 
 import base58
 from loguru import logger
@@ -139,34 +139,38 @@ def _camel_case(s):
     return "".join([s[0].lower(), s[1:]])
 
 
-def actions_to_link(receiver_id, actions: List[Action], network="mainnet"):
-    actions_args = []
-    for a in actions:
-        params = {}
-        for p, v in json.loads(a.to_json()).items():
-            if p == "access_key":
-                if "FunctionCall" in v["permission"]:
-                    for par, val in v["permission"]["FunctionCall"].items():
-                        v["permission"][_camel_case(par)] = val
-                    del v["permission"]["FunctionCall"]
-                else:
-                    v["permission"] = "FullAccess"
-            params[_camel_case(p)] = v
-        actions_args.append(
+def actions_to_link(transactions: List[Tuple[str, List[Action]]], network="mainnet"):
+    rtransactions = []
+    for tr in transactions:
+        actions_args = []
+        receiver_id, actions = tr
+        for a in actions:
+            params = {}
+            for p, v in json.loads(a.to_json()).items():
+                if p == "access_key":
+                    if "FunctionCall" in v["permission"]:
+                        for par, val in v["permission"]["FunctionCall"].items():
+                            v["permission"][_camel_case(par)] = val
+                        del v["permission"]["FunctionCall"]
+                    else:
+                        v["permission"] = "FullAccess"
+                params[_camel_case(p)] = v
+            actions_args.append(
+                {
+                    "type": type(a).__name__.replace("Action", ""),
+                    "params": params,
+                }
+            )
+        rtransactions.append(
             {
-                "type": type(a).__name__.replace("Action", ""),
-                "params": params,
+                "actions": actions_args,
+                "receiverId": receiver_id,
             }
         )
     request = base58.b58encode(
         json.dumps(
             {
-                "transactions": [
-                    {
-                        "actions": actions_args,
-                        "receiverId": receiver_id,
-                    }
-                ],
+                "transactions": rtransactions,
                 "network": network,
             }
         ).encode("utf8")
