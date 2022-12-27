@@ -3,22 +3,18 @@ import json
 
 from fastapi import APIRouter, Depends, HTTPException, Header
 from loguru import logger
-from pynear import transactions
-from pynear.constants import TGAS
-from pynear.dapps.core import NEAR
+from sse_starlette import EventSourceResponse
 from starlette.requests import Request
 from starlette.responses import HTMLResponse, RedirectResponse
 from starlette.websockets import WebSocket, WebSocketDisconnect
-from sse_starlette import EventSourceResponse
 
+from app.models import RequestInModel, ResponseInModel, RequestOutModel, SSEInModel
 from configs import APPLE_APP_SITE_ASSOCIATION, APY_KEY
 from connection_manager import (
     get_connection_manager,
     ConnectionManager,
     get_push_manager,
-    actions_to_link,
 )
-from models import ResponseInModel, RequestInModel, SSEInModel, RequestOutModel
 from push_notification import ApnsPusher, Task
 
 router = APIRouter()
