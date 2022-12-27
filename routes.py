@@ -240,8 +240,10 @@ def redirect_to_sent(
                 [
                     transactions.create_function_call_action(
                         "ft_transfer",
-                        json.dumps({"receiver_id": receiver_id}).encode("utf8"),
-                        amount,
+                        json.dumps(
+                            {"receiver_id": receiver_id, "amount": "100"}
+                        ).encode("utf8"),
+                        25 * TGAS,
                         1,
                     ),
                 ],
