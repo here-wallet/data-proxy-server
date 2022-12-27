@@ -2,11 +2,11 @@ venv
 .idea
 __pycache__
 data
-config.yaml
+configs/config.yaml
 .pytest_cache
 .coverage
 aps.cer
-apn_key.p8
+configs/apn_key.p8
 dep-config.yml
 opn_oops_key.p8
 configs/teller
@@ -16,4 +16,4 @@ storage
 test.sh
 test.py
 .env
-apy_key
+configs/apy_key

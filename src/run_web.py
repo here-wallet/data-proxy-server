@@ -11,8 +11,8 @@ from starlette.middleware.cors import CORSMiddleware
 from configs import CONFIG
 from connection_manager import ConnectionManager
 from push_notification import ApnsPusher
-from routes import router
-from trx_generator_routes import router as trx_generator_routes
+from app.routes import router
+from app.trx_generator_routes import router as trx_generator_routes
 
 logger.add(
     "logs/info.log",
