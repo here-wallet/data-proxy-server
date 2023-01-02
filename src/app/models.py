@@ -23,5 +23,5 @@ class RequestInModel(BaseModel):
 
 class RequestOutModel(BaseModel):
     data: str
-    type: str = "login"
+    type: Optional[str] = "login"
     encrypted: bool = False
