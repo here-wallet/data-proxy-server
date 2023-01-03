@@ -20,7 +20,7 @@ def redirect_to_keypom(
     link = actions_to_link(
         [
             (
-                "keypom.near",
+                "v1-3.keypom.near",
                 [
                     transactions.create_function_call_action(
                         "claim",
@@ -29,6 +29,19 @@ def redirect_to_keypom(
                         0,
                     )
                 ],
+            )
+        ]
+    )
+    return RedirectResponse(url=link)
+
+
+@router.get("/send/{receiver_id}")
+def redirect_to_send(receiver_id: str, amount: int = NEAR // 10):
+    link = actions_to_link(
+        [
+            (
+                receiver_id,
+                [transactions.create_transfer_action(amount)],
             )
         ]
     )
