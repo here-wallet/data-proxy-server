@@ -9,7 +9,7 @@ class ResponseInModel(BaseModel):
 
 class SSEEventModel(BaseModel):
     near_account_id: Optional[str]
-    key: str
+    data: str
 
 
 class SSEInModel(SSEEventModel):
