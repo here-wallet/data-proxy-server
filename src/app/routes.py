@@ -8,7 +8,7 @@ from starlette.requests import Request
 from starlette.responses import HTMLResponse, RedirectResponse
 from starlette.websockets import WebSocket, WebSocketDisconnect
 
-from app.models import RequestInModel, ResponseInModel, RequestOutModel, SSEInModel
+from app.models import RequestInModel, ResponseInModel, RequestOutModel, SSEInModel, SSEIEventsInModel
 from configs import APPLE_APP_SITE_ASSOCIATION, APY_KEY
 from connection_manager import (
     get_connection_manager,
@@ -103,6 +103,18 @@ def put_response(
     if d.key != APY_KEY:
         raise HTTPException(status_code=403, detail="Invalid key")
     cm.send_sse_for_user(d.near_account_id, d.data)
+    return {"status": "ok"}
+
+
+@router.post("/sse_events")
+def put_response(
+    data: SSEIEventsInModel,
+    cm: ConnectionManager = Depends(get_connection_manager()),
+):
+    if data.key != APY_KEY:
+        raise HTTPException(status_code=403, detail="Invalid key")
+    for d in data.events:
+        cm.send_sse_for_user(d.near_account_id, d.data)
     return {"status": "ok"}
 
 

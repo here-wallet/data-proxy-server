@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 
 from pydantic import BaseModel
 
@@ -7,10 +7,18 @@ class ResponseInModel(BaseModel):
     data: str
 
 
-class SSEInModel(BaseModel):
-    data: str
+class SSEEventModel(BaseModel):
     near_account_id: Optional[str]
     key: str
+
+
+class SSEInModel(SSEEventModel):
+    key: str
+
+
+class SSEIEventsInModel(BaseModel):
+    key: str
+    events: List[SSEEventModel]
 
 
 class RequestInModel(BaseModel):
@@ -23,5 +31,4 @@ class RequestInModel(BaseModel):
 
 class RequestOutModel(BaseModel):
     data: str
-    type: Optional[str] = "login"
     encrypted: bool = False
