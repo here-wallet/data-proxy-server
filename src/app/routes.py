@@ -114,6 +114,7 @@ def put_response(
     if data.key != APY_KEY:
         raise HTTPException(status_code=403, detail="Invalid key")
     for d in data.events:
+        print("Send to user", d.near_account_id)
         cm.send_sse_for_user(d.near_account_id, d.data)
     return {"status": "ok"}
 
