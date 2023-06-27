@@ -4,12 +4,12 @@ from pydantic import BaseModel
 
 
 class ResponseInModel(BaseModel):
-    data: str
+    data: Optional[str]
 
 
 class SSEEventModel(BaseModel):
     near_account_id: Optional[str]
-    data: str
+    data: Optional[str]
 
 
 class SSEInModel(SSEEventModel):
@@ -22,7 +22,7 @@ class SSEIEventsInModel(BaseModel):
 
 
 class RequestInModel(BaseModel):
-    data: str
+    data: Optional[str]
     type: str = "login"
     topic_id: Optional[str]
     ttl: Optional[int]
