@@ -30,5 +30,5 @@ class RequestInModel(BaseModel):
 
 
 class RequestOutModel(BaseModel):
-    data: str
+    data: Optional[str]
     encrypted: bool = False
